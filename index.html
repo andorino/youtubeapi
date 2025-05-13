@@ -317,6 +317,7 @@ common
     <img class="sin" src="./image/sin.PNG" alt="">
     <img class="kokesi" src="./image/dora.PNG" alt="">
     <div id="player"></div>
+
     <img class="ukiyo" src="./image/1261220-35.png" alt="">
     <form>
         <input type="search" id="ytSearch" value="レモンクラブ伯爵" />
@@ -602,7 +603,7 @@ common
         //授業資料からコピペ
         //検索する関数の定義
         function ytSearch(val) {
-            const key = 'AIzaSyDl02zRYeKGe1684IrMolVJ7U5Qq1TpeV8'; //自分のキーに書き換えます。
+            const key = 'AIzaSyB6E1b02aqtTqHmR1likxn1EYRalUg-FQY'; //自分のキーに書き換えます。
             const num = 10;
             const part = 'snippet';
             const type = 'video';
@@ -634,7 +635,14 @@ common
             e.preventDefault(); //検索ボタンの送信をストップしておく。
         });
 
+        setInterval(() => {
+            document.body.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
+        }, 300);
+
     </script>
+
+
+
 
     <!-- 動画が表示されている<div>の下に追加 -->
 
