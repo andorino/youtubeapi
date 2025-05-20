@@ -148,21 +148,6 @@
         margin-top: 5px;
     }
 
-    #mute {
-        margin-left: auto;
-        margin-right: auto;
-        padding: 10px 0 10px 0;
-        background-image: url(./image/tree-woods_00002.jpg);
-        width: 200px;
-        font-size: 20px;
-        font-weight: bold;
-        text-align: center;
-        color: yellow;
-        margin-top: 20px;
-        animation-name: tenmetsu;
-        animation-duration: .8s;
-        animation-iteration-count: infinite;
-    }
 
     .volume {
         background-image: url(./image/32400037_m.jpg);
@@ -309,6 +294,74 @@ common
         position: absolute;
         width: 100px;
     }
+
+    @keyframes jumpyText {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px) rotate(3deg);
+        }
+    }
+
+    .jumpy {
+        animation: jumpyText 0.3s infinite alternate;
+    }
+
+
+    body.glitch {
+        background: black;
+        color: red;
+        animation: glitchBg 0.1s infinite;
+    }
+
+    @keyframes glitchBg {
+        0% {
+            background-color: black;
+            transform: translate(0, 0);
+        }
+
+        25% {
+            background-color: darkred;
+            transform: translate(3px, -2px);
+        }
+
+        50% {
+            background-color: black;
+            transform: translate(-2px, 2px);
+        }
+
+        75% {
+            background-color: darkred;
+            transform: translate(2px, -3px);
+        }
+
+        100% {
+            background-color: black;
+            transform: translate(0, 0);
+        }
+    }
+
+    .warning {
+        font-size: 40px;
+        text-align: center;
+        margin-top: 100px;
+        display: none;
+        animation: flicker 0.2s infinite alternate;
+    }
+
+    @keyframes flicker {
+        from {
+            opacity: 1;
+        }
+
+        to {
+            opacity: 0;
+        }
+    }
 </style>
 
 <body>
@@ -323,6 +376,7 @@ common
         <input type="search" id="ytSearch" value="レモンクラブ伯爵" />
         <button id="searchBtn">検索</button>
     </form>
+
     <select class="searchlist"></select>
     <nav>
         <ul>
@@ -341,13 +395,13 @@ common
             <li>
                 <select id="MovieId" class="ytMovie" name="ytMovie">
                     <option selected>選択してください。</option>
-                    <option value="bjN-3EyXNyE">やや左側にかたよった教育番組</option>
-                    <option value="We__CnrYa9U">きょういくばんぐみのテーマ</option>
-                    <option value="I6ld4ecEp7s">みさえ、今日のキノコなんだか美味しいな #Shorts</option>
-                    <option value="azQVVhMUz58">あるいは最高位人権道徳者を目指しなさい</option>
+                    <option value="ugiO_lox-7w">ひとりかくれんぼ</option>
+                    <option value="rgG8uVHBADY">異世界に行く方法</option>
+                    <option value="iydhGImwhxg">呪いの人形</option>
+                    <option value="azQVVhMUz58">押すな押すな押すな押すな押すな</option>
                 </select>
             </li>
-            <li id="mute">ミュート</li>
+
             <label class="volume">ボリューム<input type="range" min="0" max="100" name="volume" id="volume" value="50" />
                 <span id="volumeNum"></span>
             </label>
@@ -429,6 +483,8 @@ common
             });
         }
 
+
+
         // 4. The API will call this function when the video player is ready.
         // 4. このAPIは、video playderが準備でしたら、この関数を呼び出します。
         function onPlayerReady(event) {
@@ -481,27 +537,7 @@ common
             pauseTheVideo();
         });
 
-        //ミュート関数
-        function onMute() {
-            //ミュートの時、trueを返すのでミュートを解除します。
-            if (player.isMuted()) {
-                player.unMute();
-            } else {
-                //ミュートが解除されている時はfalseなので、ミュートにします。
-                player.mute();
-            }
-        }
 
-        //ミュートイベント
-        let onMuteBtn = document.querySelector('#mute');
-        onMuteBtn.addEventListener('click', function () {
-            onMute();
-            if (onMuteBtn.innerText === 'ミュート') {
-                onMuteBtn.innerText = 'ミュート解除';
-            } else {
-                onMuteBtn.innerText = 'ミュート';
-            }
-        });
 
         //10秒前にの関数
         function onePrev() {
@@ -543,6 +579,12 @@ common
 
         // 4. The API will call this function when the video player is ready.
         // 4. このAPIは、video playderが準備でしたら、この関数を呼び出します。
+
+        document.querySelectorAll(' img').forEach(el => {
+            el.addEventListener('mousemove', () => {
+                el.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(${Math.random() * 360}deg)`;
+            });
+        });
         function onPlayerReady(event) {
             event.target.playVideo(); //①最初の再生を止める
             let currentVol = 5; //②最初のボリュームを設定（0〜100）
@@ -574,13 +616,16 @@ common
             }
         }
 
-        //動画切り替えイベント
         let movieid = document.querySelector('#MovieId');
+
         movieid.addEventListener('change', function () {
-            youtubeId = movieid.value;
-            //プレイヤー削除
-            player.destroy();
-            onYouTubeIframeAPIReady();
+            const youtubeId = movieid.value;
+
+            if (player && typeof player.loadVideoById === 'function') {
+                player.loadVideoById(youtubeId);
+            } else {
+                console.error('YouTubeプレイヤーが初期化されていません');
+            }
         });
 
         //再生スピード関数
@@ -635,9 +680,25 @@ common
             e.preventDefault(); //検索ボタンの送信をストップしておく。
         });
 
-        setInterval(() => {
-            document.body.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
-        }, 300);
+
+        const select = document.getElementById('MovieId');
+        const warning = document.getElementById('warningMessage');
+
+        select.addEventListener('change', function () {
+            const selectedValue = select.value;
+
+            if (selectedValue === 'azQVVhMUz58') {
+                document.body.classList.add('glitch');
+                warning.style.display = 'block';
+
+                // さらに怖くしたければ音を鳴らす
+                const scream = new Audio('https://freesound.org/data/previews/341/341695_5260877-lq.mp3');
+                scream.play();
+            } else {
+                document.body.classList.remove('glitch');
+                warning.style.display = 'none';
+            }
+        });
 
     </script>
 
